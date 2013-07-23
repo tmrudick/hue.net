@@ -5,7 +5,9 @@ using System.Text;
 
 namespace Hue
 {
-    class Light
+    public class Light
     {
+        public string Name { get; protected set; }
+        public LightState State { get; protected set; }
     }
 }

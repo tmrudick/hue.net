@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="Bridge.cs" />
     <Compile Include="Light.cs" />
+    <Compile Include="LightState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

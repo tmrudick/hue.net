@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,6 @@ namespace Hue
         private HttpClient client = new HttpClient();
 
         public event EventHandler ButtonRequired;
-        public event EventHandler Registered;
 
         public Bridge(string applicationName, string ipAddress)
         {
@@ -52,27 +52,29 @@ namespace Hue
 
         public async Task<string> Register()
         {
-            return null;
+            throw new NotImplementedException();
         }
 
         public async Task<IEnumerable<Light>> GetLights()
         {
-            return null;
+            string result = await client.GetStringAsync(string.Format("http://{0}/api/{1}/lights", this.ipAddress, this.applicationName));
+            JObject json = JsonConvert.DeserializeObject<JObject>(result);
+            return JsonConvert.DeserializeObject<IEnumerable<Light>>(result);
         }
 
         public async Task<Light> GetLight(string id)
         {
-            return null;
+            throw new NotImplementedException();
         }
 
         public async Task<Light> SetLights(IEnumerable<Light> lights)
         {
-            return null;
+            throw new NotImplementedException();
         }
 
         public async Task<Light> SetLight(IEnumerable<Light> light)
         {
-            return null;
+            throw new NotImplementedException();
         }
     }
 }
