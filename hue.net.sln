@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hue.net", "hue.net\hue.net.csproj", "{444426C5-0E62-45D5-9661-F5F0871BD12E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hue.Tests", "Tests\Hue.Tests.csproj", "{C7723DB8-4A6A-4810-AEF5-EB3D83F267FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{444426C5-0E62-45D5-9661-F5F0871BD12E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{444426C5-0E62-45D5-9661-F5F0871BD12E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{444426C5-0E62-45D5-9661-F5F0871BD12E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7723DB8-4A6A-4810-AEF5-EB3D83F267FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7723DB8-4A6A-4810-AEF5-EB3D83F267FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7723DB8-4A6A-4810-AEF5-EB3D83F267FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7723DB8-4A6A-4810-AEF5-EB3D83F267FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

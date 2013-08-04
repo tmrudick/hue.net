@@ -8,7 +8,7 @@
     <ProjectGuid>{444426C5-0E62-45D5-9661-F5F0871BD12E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>hue.net</RootNamespace>
+    <RootNamespace>Hue</RootNamespace>
     <AssemblyName>hue.net</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Profile154</TargetFrameworkProfile>

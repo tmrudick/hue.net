@@ -24,6 +24,11 @@ namespace Hue
             this.applicationName = applicationName;
         }
 
+        internal void setHttpClient(HttpClient client)
+        {
+            this.client = client;
+        }
+
         public Bridge(string applicationName) : this(applicationName, null) 
         {
         }
@@ -32,17 +37,26 @@ namespace Hue
         {
         }
 
-        public async void Discover()
+        public async Task<string> Discover()
         {
             HttpResponseMessage response = await this.client.GetAsync(DISCOVERY_URL);
             string body = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                // HACK: This sucks
-                body = body.Substring(1, body.Length - 2);
-                dynamic json = JObject.Parse(body);
-                this.ipAddress = json.internalipaddress;
+                JArray json = JArray.Parse(body);
+
+                if (json.Count == 0)
+                {
+                    throw new Exception("Cannot find bridge");
+                }
+                else
+                {
+                    var obj = (JObject)json[0];
+                    this.ipAddress = (string)obj["internalipaddress"];
+
+                    return this.ipAddress;
+                }
             }
             else
             {
@@ -59,7 +73,18 @@ namespace Hue
         {
             string result = await client.GetStringAsync(string.Format("http://{0}/api/{1}/lights", this.ipAddress, this.applicationName));
             JObject json = JsonConvert.DeserializeObject<JObject>(result);
-            return JsonConvert.DeserializeObject<IEnumerable<Light>>(result);
+
+            List<Light> lights = new List<Light>();
+
+            foreach (JProperty property in json.Properties())
+            {
+                string lightStr = await client.GetStringAsync(string.Format("http://{0}/api/{1}/lights/{2}", this.ipAddress, this.applicationName, property.Name));
+
+                Light light = JsonConvert.DeserializeObject<Light>(lightStr);
+                lights.Add(light);
+            }
+
+            return lights;
         }
 
         public async Task<Light> GetLight(string id)
