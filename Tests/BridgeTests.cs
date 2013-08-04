@@ -1,13 +1,9 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Hue;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
-using Moq;
+using System.Linq;
 using System.Net.Http;
-using System.Threading;
-using System.Net;
+using System.Threading.Tasks;
 
 namespace Hue.Tests
 {
@@ -28,7 +24,7 @@ namespace Hue.Tests
                     });
 
             Bridge bridge = new Bridge();
-            bridge.setHttpClient(handler.Client);
+            bridge.client = handler.Client;
             
             // Try to discover the bridge and get the IP
             string ip = await bridge.Discover();
@@ -53,7 +49,7 @@ namespace Hue.Tests
                 });
 
             Bridge bridge = new Bridge();
-            bridge.setHttpClient(handler.Client);
+            bridge.client = handler.Client;
 
             try
             {
@@ -68,13 +64,24 @@ namespace Hue.Tests
         }
 
         [TestMethod]
-        public async Task GetLightsReturnsLights()
+        public async Task GetLightsReturnsLightsWithoutLights()
         {
-            HttpResponseMessage msg = new HttpResponseMessage();
+            MockHttpHandler handler = new MockHttpHandler();
+            handler.Responds("{}")
+                .Expects(new HttpRequestMessage()
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri("http://10.10.10.1/api/testapp/lights")
+                });
 
-            Bridge bridge = new Bridge("tmrudick5991", "192.168.1.3");
+            Bridge bridge = new Bridge("testapp", "10.10.10.1");
+            bridge.client = handler.Client;
 
-            IEnumerable<Light> lights = await bridge.GetLights();           
+            IEnumerable<Light> lights = await bridge.GetLights();
+
+            Assert.AreEqual(0, lights.Count());
+
+            handler.Verify();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Hue
         private const string DISCOVERY_URL = "http://www.meethue.com/api/nupnp";
         private string ipAddress = null;
         private string applicationName = null;
-        private HttpClient client = new HttpClient();
+        internal HttpClient client = new HttpClient();
 
         public event EventHandler ButtonRequired;
 
@@ -22,11 +22,6 @@ namespace Hue
         {
             this.ipAddress = ipAddress;
             this.applicationName = applicationName;
-        }
-
-        internal void setHttpClient(HttpClient client)
-        {
-            this.client = client;
         }
 
         public Bridge(string applicationName) : this(applicationName, null) 
