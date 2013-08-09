@@ -73,9 +73,7 @@ namespace Hue
 
             foreach (JProperty property in json.Properties())
             {
-                string lightStr = await client.GetStringAsync(string.Format("http://{0}/api/{1}/lights/{2}", this.ipAddress, this.applicationName, property.Name));
-
-                Light light = JsonConvert.DeserializeObject<Light>(lightStr);
+                var light = await GetLight(property.Name);
                 lights.Add(light);
             }
 
@@ -84,7 +82,9 @@ namespace Hue
 
         public async Task<Light> GetLight(string id)
         {
-            throw new NotImplementedException();
+            string lightStr = await client.GetStringAsync(string.Format("http://{0}/api/{1}/lights/{2}", this.ipAddress, this.applicationName, id));
+
+            return JsonConvert.DeserializeObject<Light>(lightStr);
         }
 
         public async Task<Light> SetLights(IEnumerable<Light> lights)
