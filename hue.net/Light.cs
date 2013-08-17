@@ -7,6 +7,7 @@ namespace Hue
 {
     public class Light
     {
+        public string Id { get; set; }
         public string Name { get; set; }
         public LightState State { get; set; }
     }

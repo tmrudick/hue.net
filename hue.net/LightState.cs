@@ -8,7 +8,10 @@ namespace Hue
 {
     public class LightState
     {
+        [JsonProperty("on")]
         public bool On { get; set; }
+
+        [JsonProperty("hue")]
         public int Hue { get; set; }
 
         [JsonProperty("sat")]

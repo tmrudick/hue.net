@@ -29,6 +29,18 @@ namespace Hue.Tests
             return this;
         }
 
+        public MockHttpHandler Expects(string url, HttpMethod method, string content)
+        {
+            this.requests.Add(new HttpRequestMessage()
+            {
+                RequestUri = new Uri(url),
+                Method = method,
+                Content = new StringContent(content)
+            });
+
+            return this;
+        }
+
         public MockHttpHandler Expects(List<HttpRequestMessage> msgs)
         {
             this.requests.AddRange(msgs);
@@ -57,7 +69,7 @@ namespace Hue.Tests
             return this;
         }
 
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             HttpResponseMessage response = null;
             HttpRequestMessage expectedRequest = null;
@@ -83,11 +95,15 @@ namespace Hue.Tests
                 Assert.AreEqual(expectedRequest.Method, request.Method);
                 Assert.AreEqual(expectedRequest.RequestUri, request.RequestUri);
 
-                // TODO: Make this actually compare the content types
-                Assert.AreEqual(expectedRequest.Content, request.Content);
+                if (expectedRequest.Content != null)
+                {
+                    string expectedContent = await expectedRequest.Content.ReadAsStringAsync();
+                    string actualContent = await request.Content.ReadAsStringAsync();
+                    Assert.AreEqual(expectedContent, actualContent);
+                }
             }
 
-            return Task.Factory.StartNew(() => response);
+            return response;
         }
 
         public void Verify()

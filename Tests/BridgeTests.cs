@@ -112,6 +112,7 @@ namespace Hue.Tests
             Assert.AreEqual(2, lights.Count());
 
             Light light = lights[0];
+            Assert.AreEqual("1", light.Id);
             Assert.AreEqual("Hue Lamp 1", light.Name);
             Assert.IsFalse(light.State.On);
             Assert.AreEqual(235, light.State.Brightness);
@@ -119,6 +120,7 @@ namespace Hue.Tests
             Assert.AreEqual(195, light.State.Saturation);
 
             light = lights[1];
+            Assert.AreEqual("2", light.Id);
             Assert.AreEqual("Hue Lamp 2", light.Name);
             Assert.IsTrue(light.State.On);
             Assert.AreEqual(10, light.State.Brightness);
@@ -142,11 +144,75 @@ namespace Hue.Tests
             bridge.client = handler.Client;
 
             Light light = await bridge.GetLight("1");
+            Assert.AreEqual("1", light.Id);
             Assert.AreEqual("Hue Lamp 1", light.Name);
             Assert.IsFalse(light.State.On);
             Assert.AreEqual(235, light.State.Brightness);
             Assert.AreEqual(47212, light.State.Hue);
             Assert.AreEqual(195, light.State.Saturation);
+
+            handler.Verify();
+        }
+
+        [TestMethod]
+        public async Task SetSingleLight()
+        {
+            Light light = new Light() {
+                Id = "1",
+                Name = "Light 1",
+                State = new LightState() {
+                    On = true,
+                    Brightness = 75
+                }
+            };
+
+            MockHttpHandler handler = new MockHttpHandler();
+            handler.Expects(new HttpRequestMessage()
+            {
+                Method = HttpMethod.Put,
+                Content = new StringContent("{\"on\":true,\"hue\":0,\"sat\":0,\"bri\":75}"),
+                RequestUri = new Uri("http://10.10.10.1/api/testapp/lights/1/state")
+            }).Responds("{\"success\": {}}");
+
+            Bridge bridge = new Bridge("testapp", "10.10.10.1");
+            bridge.client = handler.Client;
+
+            await bridge.SetLight(light);
+
+            handler.Verify();
+        }
+
+        [TestMethod]
+        public async Task SetMultipleLights()
+        {
+            List<Light> lights = new List<Light>();
+            lights.Add(new Light()
+            {
+                Id = "1",
+                State = new LightState()
+                {
+                    On = true
+                }
+            });
+            lights.Add(new Light()
+            {
+                Id = "2",
+                State = new LightState()
+                {
+                    On = false
+                }
+            });
+
+            MockHttpHandler handler = new MockHttpHandler();
+            handler.Expects("http://10.10.10.1/api/testapp/lights/1/state", HttpMethod.Put, "{\"on\":true,\"hue\":0,\"sat\":0,\"bri\":0}")
+                .Responds("{\"success\":{}}")
+                .Expects("http://10.10.10.1/api/testapp/lights/2/state", HttpMethod.Put, "{\"on\":false,\"hue\":0,\"sat\":0,\"bri\":0}")
+                .Responds("{\"success\":{}}");
+
+            Bridge bridge = new Bridge("testapp", "10.10.10.1");
+            bridge.client = handler.Client;
+
+            await bridge.SetLights(lights);
 
             handler.Verify();
         }

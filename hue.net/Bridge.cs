@@ -84,17 +84,36 @@ namespace Hue
         {
             string lightStr = await client.GetStringAsync(string.Format("http://{0}/api/{1}/lights/{2}", this.ipAddress, this.applicationName, id));
 
-            return JsonConvert.DeserializeObject<Light>(lightStr);
+            Light light = JsonConvert.DeserializeObject<Light>(lightStr);
+            light.Id = id;
+
+            return light;
         }
 
-        public async Task<Light> SetLights(IEnumerable<Light> lights)
+        public async Task<IEnumerable<Light>> SetLights(IEnumerable<Light> lights)
         {
-            throw new NotImplementedException();
+            foreach (Light light in lights)
+            {
+                await SetLight(light);
+            }
+
+            return lights;
         }
 
-        public async Task<Light> SetLight(IEnumerable<Light> light)
+        public async Task<Light> SetLight(Light light)
         {
-            throw new NotImplementedException();
+            StringContent content = new StringContent(JsonConvert.SerializeObject(light.State));
+            var response = await client.PutAsync(string.Format("http://{0}/api/{1}/lights/{2}/state", this.ipAddress, this.applicationName, light.Id), content);
+
+            string json = await response.Content.ReadAsStringAsync();
+            JObject obj = JObject.Parse(json);
+
+            if (obj["error"] != null)
+            {
+                throw new Exception((string)obj["error"]["description"]);
+            }
+
+            return light;
         }
     }
 }
